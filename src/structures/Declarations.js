@@ -84,6 +84,30 @@ export class IfStatement extends Node {
 /**
  * @augments Node
  */
+export class RepeatStatement extends Node {
+	/**
+	 * Creates IfStatement SyntaxTree Node
+	 * @param {object} expr
+	 */
+	constructor({ count, consequent, raw }) {
+		super("RepeatStatement")
+
+		this.count = count
+		this.consequent = consequent
+		this.raw = raw
+	}
+
+	/**
+	 * @override
+	 */
+	toString() {
+		return `لو شرطية: ${ this.raw }`
+	}
+}
+
+/**
+ * @augments Node
+ */
 export class ConsoleStatement extends Node {
 	/**
 	 * Creates ConsoleStatement SyntaxTree Node

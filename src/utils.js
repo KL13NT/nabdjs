@@ -1,3 +1,8 @@
+import {
+	GenericError
+} from './structures/Errors.js'
+
+
 export function inferType(value) {
 	const stringRegex = /^"[\u0600-\u06FF\w+ +]+"$/
 	const variableRegex = /^([\u0600-\u06FF]+)$/
@@ -7,7 +12,7 @@ export function inferType(value) {
 	if (nan && stringRegex.test(value)) return "string"
 	else if (nan && variableRegex.test(value)) return "variable"
 	else if (!nan) return "number"
-	else throw Error("مش فاهم نوع المتغير ده")
+	else throw new GenericError(Nabd0009, value)
 }
 
 export function formatValue(value) {
@@ -21,7 +26,7 @@ export function formatValue(value) {
 export function getVariable(scope, name) {
 	const value = scope[name]
 
-	if (!value) throw Error("المتغير مش موجود")
+	if (!value) throw new GenericError(Nabd0002, name)
 
 	return value
 }

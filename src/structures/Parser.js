@@ -1,7 +1,8 @@
 import {
 	VariableDeclarationGenerator,
 	IfStatementGenerator,
-	ConsoleStatementGenerator
+	ConsoleStatementGenerator,
+	RepeatStatementGenerator
 } from "./Generators.js"
 import { ParsingError } from "./Errors.js"
 
@@ -16,9 +17,10 @@ export class Parser {
 	static parseLine(input) {
 		const line = input.trim()
 
-		if (line.startsWith("حدد")) return VariableDeclarationGenerator.generate(line)
+		if (line.startsWith("#")) return ""
+		else if (line.startsWith("حدد")) return VariableDeclarationGenerator.generate(line)
 		else if (line.startsWith("لو")) return IfStatementGenerator.generate(line)
-		// else if (line.startsWith("لو") && line.includes("أما لو")) return .generate(line)
+		else if (line.startsWith("كرر")) return RepeatStatementGenerator.generate(line)
 		else if (line.startsWith("اطبع")) return ConsoleStatementGenerator.generate(line)
 		else if (line.trim() === "") throw new ParsingError(Nabd0005, line)
 		else throw new ParsingError(Nabd0006, line)
@@ -33,7 +35,9 @@ export class Parser {
 		const nodes = []
 
 		program.forEach((line, index) => {
-			nodes.push(Parser.parseLine(line))
+			const parsed = Parser.parseLine(line)
+
+			if (parsed !== "") nodes.push(parsed)
 		})
 
 		return nodes

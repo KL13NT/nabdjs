@@ -1,7 +1,8 @@
 import {
 	VariableDeclaration,
 	IfStatement,
-	ConsoleStatement
+	ConsoleStatement,
+	RepeatStatement
 } from './Declarations.js'
 
 import {
@@ -61,9 +62,17 @@ export class IfStatementGenerator extends Generator {
 			const isNegated = match[5]
 			const operator = match[6]
 			const expr = match[10]
-			const consequent = Parser.parseLine(expr.replace(/:/g, '').trim())
+			const consequent = Parser.parseLine(expr.replace(":", '').trim())
+			console.log(expr)
 
-			return new IfStatement({ right, left, operator, isNegated, consequent })
+			return new IfStatement({
+				right,
+				left,
+				operator,
+				isNegated,
+				consequent,
+				raw: line
+			})
 		}
 		else throw new ParsingError(`في حاجة غلط وانت بتعمل الشرط`, line)
 	}
@@ -76,14 +85,36 @@ export class IfStatementGenerator extends Generator {
  */
 export class ConsoleStatementGenerator extends Generator {
 	static generate(line) {
-		const match = line.match(/^(اطبع)( +)([\u0600-\u06FF +]+|"[\u0600-\u06FF +]+")( +)?\.$/)
+		const match = line.match(/^(اطبع)( +)([\u0600-\u06FF +]+|\\?"[\u0600-\u06FF +]+\\?")( +)?\.$/)
 
-		console.log("print line", line, match)
 		if (match) {
 			const param = match[3]
 
-			return new ConsoleStatement(param)
+			return new ConsoleStatement(param, line)
 		}
 		else throw new ParsingError(`في حاجة غلط في الطباعة`, line)
+	}
+}
+
+
+/**
+ * @class
+ * @abstract
+ * @extends Generator
+ */
+export class RepeatStatementGenerator extends Generator {
+	static generate(line) {
+		const match = line.match(/^(كرر)( +)([0-9]+)( +)?(:.+\.)$/)
+
+		if (match) {
+			const count = Number(match[3])
+			const expr = match[5]
+			const consequent = Parser.parseLine(unescape(expr.replace(":", '').trim()))
+
+			if (isNaN(count)) throw new ParsingError(Nabd, expr)
+
+			return new RepeatStatement({ count, consequent, raw: line })
+		}
+		else throw new ParsingError(`في حاجة غلط وانت بتعمل الشرط`, line)
 	}
 }

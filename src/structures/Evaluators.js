@@ -19,6 +19,8 @@ export class ExpressionEvaluator {
 			return ConsoleStatementEvaluator.eval(scope, expr)
 		else if (type === "IfStatement")
 			return IfStatementEvaluator.eval(scope, expr)
+		else if (type === "RepeatStatement")
+			return RepeatStatementEvaluator.eval(scope, expr)
 		else throw new GenericError(Nabd0001, expr)
 	}
 }
@@ -66,7 +68,7 @@ export class ConsoleStatementEvaluator {
 
 			return scope[value]
 		}
-		else GenericError(Nabd0001, expr)
+		else new GenericError(Nabd0001, expr)
 	}
 }
 
@@ -95,6 +97,57 @@ export class IfStatementEvaluator {
 		if (operator === "<") return leftValue < rightValue
 		else if (operator === ">") return leftValue > rightValue
 		else return leftValue === rightValue
+	}
+
+	/**
+	 * Determines whether if statement condition is truthy
+	 * @param {object} expr
+	 * @param {object} scope
+	 */
+	static isTrue(expr, scope) {
+		const { right, left, type, operator, isNegated } = expr
+
+		const rightValue = right.type === "variable" ? getVariable(scope, right.name) : right.value
+		const leftValue = left.type === "variable" ? getVariable(scope, left.name) : left.value
+
+		if (typeof rightValue !== typeof leftValue) throw new EvaluationError(Nabd0003, expr)
+
+		// passing right.type only since both are gonna be same type anyway
+		const result = this.compare({ rightValue, leftValue, type: right.type, operator })
+		return isNegated ? !result : result
+	}
+}
+
+/**
+ * @class
+ */
+export class RepeatStatementEvaluator {
+	/**
+	 * Evaluatues if statements
+	 * @param {object} scope
+	 * @param {object} expr
+	 */
+	static eval(scope, expr) {
+		const { count, consequent } = expr
+
+		return this.repeat(scope, count, consequent)
+		ExpressionEvaluator.eval(scope, consequent)
+	}
+
+	/**
+	 * Compares the two given values using the respective operator
+	 * @param {object} expr
+	 */
+	static repeat(scope, count, consequent) {
+		const result = []
+
+		if (count >= Infinity) throw new EvaluationError(Nabd0008, consequent)
+
+		for (let i = 0; i < count; i++) {
+			result.push(ExpressionEvaluator.eval(scope, consequent))
+		}
+
+		return result
 	}
 
 	/**

@@ -4,7 +4,7 @@ const area = document.querySelector('textarea')
 const display = document.querySelector('span')
 
 function modifyContent(returned) {
-	display.textContent += '\n' + returned.toString().replace(/"/g, "").replace(/,/g, " ")
+	display.textContent = returned.toString().replace(/"/g, "").replace(/,/g, " ")
 }
 
 window.addEventListener('load', () => {
@@ -15,19 +15,10 @@ window.addEventListener('load', () => {
 اطبع اللغة.
 اطبع "ومبرمجي وكاتبي هو ".
 اطبع الكاتب.
+لو "هاها" == "هاها": اطبع "هاها".
+كرر 2: اطبع "جوا اللووب".
 `
 	area.addEventListener('keyup', e => {
-		if (e.key === "Enter") {
-			try {
-				evaluate(area.value, modifyContent)
-			}
-			catch (err) {
-				modifyContent(err.message)
-				console.log(err)
-			}
-		}
-		else if (e.key === "Backspace") {
-			display.textContent = ""
-		}
+		evaluate(area.value, modifyContent)
 	})
 })

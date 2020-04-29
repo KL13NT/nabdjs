@@ -16,7 +16,7 @@ export class GenericError extends Error {
 	 */
 	toString() {
 		if (typeof this.expr === "object") return `${ this.name } ${ this.expr.toString() }`
-		else return `خطأ: ${ this.message } على سطر ${ this.expr }`
+		else return `خطأ: ${ this.message } (${ this.expr })`
 	}
 }
 
