@@ -1,0 +1,27 @@
+{
+	"source": {
+		"includePatterns": "(\\.\\/src\\/.+\\.js)|(\\.\\/index\\.js)"
+	},
+	"sourceType": "module",
+	"opts": {
+		"readme": "./README.md",
+		"theme_opts": {
+			"title": "NabdJS",
+			"meta": [
+				"<meta name=\"author\" content=\"Nabil Tharwat\">",
+				"<meta name=\"description\" content=\"NabdJS\">"
+			],
+			"menu": [
+				{
+					"title": "REPL!",
+					"link": "/demo.html"
+				},
+				{
+					"title": "Github",
+					"link": "https://github.com/KL13NT/nabdjs",
+					"target": "_blank"
+				}
+			]
+		}
+	}
+}

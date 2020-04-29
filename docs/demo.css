@@ -1,0 +1,41 @@
+
+/* Element | http://localhost:5500/ */
+
+:root{
+	font-size: 20px;
+}
+
+*{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body > textarea:nth-child(1) {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 1rem;
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.3);
+  height: 90vh;
+	direction: rtl;
+	font-size: inherit
+}
+
+
+
+/* Element | http://localhost:5500/ */
+
+body > span:nth-child(2) {
+  display: block;
+  direction: rtl;
+  width: 100%;
+	border: solid 1px rgba(0,0,0,0.4);
+	box-shadow: 0 2px 4px 0 rgba(0,0,0,0.3);
+	box-sizing: border-box;
+	padding: 0.5rem;
+	font-size: 1rem;
+	position: fixed;
+	bottom: 0;
+	margin: 0;
+	background: white;
+}

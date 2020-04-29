@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Evaluators.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Evaluators.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { formatValue, getVariable } from '../utils.js'
+import { EvaluationError, GenericError } from './Errors.js'
+
+/**
+ * @class
+ */
+export class ExpressionEvaluator {
+	/**
+	 * Evaluates each line separately while providing scope
+	 * @param {object} scope
+	 * @param {object} expr
+	 */
+	static eval(scope, expr) {
+		const { type } = expr
+
+		if (type === "VariableDeclaration")
+			return VariableDeclarationEvaluator.eval(scope, expr)
+		else if (type === "ConsoleStatement")
+			return ConsoleStatementEvaluator.eval(scope, expr)
+		else if (type === "IfStatement")
+			return IfStatementEvaluator.eval(scope, expr)
+		else throw new GenericError(Nabd0001, expr)
+	}
+}
+
+
+/**
+ * @class
+ */
+export class VariableDeclarationEvaluator {
+	/**
+	 * Evaluatues variable declarations
+	 * @param {object} scope
+	 * @param {object} expr
+	 */
+	static eval(scope, expr) {
+		const decl = expr.declaration
+		const { type, value, name } = decl
+
+		if (type === "string" || type === "number") scope[name] = value
+		else if (type === "variable") {
+			if (!scope[value]) throw new EvaluationError(Nabd0002, expr)
+
+			scope[name] = scope[value]
+		}
+		else new GenericError(Nabd0001, expr)
+	}
+}
+
+/**
+ * @class
+ */
+export class ConsoleStatementEvaluator {
+	/**
+	 * Evaluatues console statements
+	 * @param {object} scope
+	 * @param {object} expr
+	 */
+	static eval(scope, expr) {
+		const arg = expr.argument
+		const { type, value } = arg
+
+		if (type === "string" || type === "number") return value
+		else if (type === "variable") {
+			if (!scope[value]) throw new EvaluationError(Nabd0002, expr)
+
+			return scope[value]
+		}
+		else GenericError(Nabd0001, expr)
+	}
+}
+
+/**
+ * @class
+ */
+export class IfStatementEvaluator {
+	/**
+	 * Evaluatues if statements
+	 * @param {object} scope
+	 * @param {object} expr
+	 */
+	static eval(scope, expr) {
+		const { consequent } = expr
+
+		if (this.isTrue(expr, scope)) return ExpressionEvaluator.eval(scope, consequent)
+	}
+
+	/**
+	 * Compares the two given values using the respective operator
+	 * @param {object} expr
+	 */
+	static compare({ rightValue, leftValue, type, operator }) {
+		if ((operator === "&lt;" || operator === ">") &amp;&amp; type !== "number") throw new EvaluationError(Nabd0004, `${ rightValue }${ operator }${ leftValue }`)
+
+		if (operator === "&lt;") return leftValue &lt; rightValue
+		else if (operator === ">") return leftValue > rightValue
+		else return leftValue === rightValue
+	}
+
+	/**
+	 * Determines whether if statement condition is truthy
+	 * @param {object} expr
+	 * @param {object} scope
+	 */
+	static isTrue(expr, scope) {
+		const { right, left, type, operator, isNegated } = expr
+
+		const rightValue = right.type === "variable" ? getVariable(scope, right.name) : right.value
+		const leftValue = left.type === "variable" ? getVariable(scope, left.name) : left.value
+
+		if (typeof rightValue !== typeof leftValue) throw new EvaluationError(Nabd0003, expr)
+
+		// passing right.type only since both are gonna be same type anyway
+		const result = this.compare({ rightValue, leftValue, type: right.type, operator })
+		return isNegated ? !result : result
+	}
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ConsoleStatement.html">ConsoleStatement</a></li><li><a href="ConsoleStatementEvaluator.html">ConsoleStatementEvaluator</a></li><li><a href="ConsoleStatementGenerator.html">ConsoleStatementGenerator</a></li><li><a href="EvaluationError_EvaluationError.html">EvaluationError</a></li><li><a href="ExpressionEvaluator.html">ExpressionEvaluator</a></li><li><a href="Generator.html">Generator</a></li><li><a href="GenericError_GenericError.html">GenericError</a></li><li><a href="IfStatement.html">IfStatement</a></li><li><a href="IfStatementEvaluator.html">IfStatementEvaluator</a></li><li><a href="IfStatementGenerator.html">IfStatementGenerator</a></li><li><a href="Node.html">Node</a></li><li><a href="Parser.html">Parser</a></li><li><a href="ParsingError_ParsingError.html">ParsingError</a></li><li><a href="VariableDeclaration.html">VariableDeclaration</a></li><li><a href="VariableDeclarationEvaluator.html">VariableDeclarationEvaluator</a></li><li><a href="VariableDeclarationGenerator.html">VariableDeclarationGenerator</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.2</a> on Wed Apr 29 2020 17:30:29 GMT+0200 (Eastern European Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

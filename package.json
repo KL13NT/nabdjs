@@ -1,0 +1,12 @@
+{
+	"name": "NabdJS",
+	"version": "1.0.6",
+	"description": "A dummy programming language build using JavaScript based on BASIC principles, and in Arabic!",
+	"main": "index.js",
+	"repository": "git@github.com:KL13NT/nabdjs.git",
+	"author": "Nabil <nabil.tharwat@outlook.com>",
+	"license": "GPL-3.0-only",
+	"scripts": {
+		"docs": "jsdoc -c ./jsdoc.json -r ./ -d docs"
+	}
+}
