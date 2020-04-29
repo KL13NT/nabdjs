@@ -2,6 +2,10 @@
 
 NabdJS is an Arabic programming language created using JavaScript based on the principles of BASIC and the parsing of JavaScript itself.
 
+### Demo
+
+You can use the live REPL here [kl13nt.github.io/index.html](kl13nt.github.io/demo.html).
+
 ### How this works
 
 Nabd code goes through 3 stages:
@@ -12,7 +16,7 @@ Nabd code goes through 3 stages:
 
 ### Parsing
 
-Parsing is done using `Parser` class. What it does is simple: take program input as string, split it up, and parse each line separately. If a line starts with a known keyword, a respective `NodeGenerator` will be used to create the respective Syntax Tree node.
+Parsing is done using `Parser` class. What it does is simple: take program input as string, split it up, and parse each line separately. If a line starts with a known keyword, a respective `NodeGenerator` will be used to create the respective Syntax Tree node, just like JS.
 
 ### Generating syntax tree
 
