@@ -4,7 +4,7 @@ NabdJS is an Arabic programming language created using JavaScript based on the p
 
 ### Demo
 
-You can use the live REPL here [kl13nt.github.io/nabdjs/index.html](kl13nt.github.io/nabdjs/demo.html).
+You can use the live REPL [here](kl13nt.github.io/nabdjs/demo.html).
 
 ### How this works
 
