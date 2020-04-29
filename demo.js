@@ -15,19 +15,19 @@ window.addEventListener('load', () => {
 اطبع اللغة.
 اطبع "ومبرمجي وكاتبي هو ".
 اطبع الكاتب.
-	`)
-area.addEventListener('keyup', e => {
-	if (e.key === "Enter") {
-		try {
-			evaluate(area.value, modifyContent)
+`
+	area.addEventListener('keyup', e => {
+		if (e.key === "Enter") {
+			try {
+				evaluate(area.value, modifyContent)
+			}
+			catch (err) {
+				modifyContent(err.message)
+				console.log(err)
+			}
 		}
-		catch (err) {
-			modifyContent(err.message)
-			console.log(err)
+		else if (e.key === "Backspace") {
+			display.textContent = ""
 		}
-	}
-	else if (e.key === "Backspace") {
-		display.textContent = ""
-	}
-})
+	})
 })
