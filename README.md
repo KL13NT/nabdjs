@@ -4,7 +4,7 @@ NabdJS is an Arabic programming language created using JavaScript based on the p
 
 ### Demo
 
-You can use the live REPL here [kl13nt.github.io/index.html](kl13nt.github.io/demo.html).
+You can use the live REPL here [kl13nt.github.io/nabdjs/index.html](kl13nt.github.io/nabdjs/demo.html).
 
 ### How this works
 
@@ -36,7 +36,7 @@ There are multiple error types:
 
 ### For more information
 
--   Documentation is available at [kl13nt.github.io/index.html](kl13nt.github.io/index.html) and the git repo.
+-   Documentation is available at [kl13nt.github.io/nabdjs/index.html](kl13nt.github.io/nabdjs/index.html) and the git repo.
 
 ### License
 
