@@ -8,18 +8,26 @@ function modifyContent(returned) {
 }
 
 window.addEventListener('load', () => {
-	area.addEventListener('keyup', e => {
-		if (e.key === "Enter") {
-			try {
-				evaluate(area.value, modifyContent)
-			}
-			catch (err) {
-				modifyContent(err.message)
-				console.log(err)
-			}
+	area.value = `
+حدد اللغة = "نبض".
+حدد الكاتب = "نبيل ثروت".
+اطبع "لغتي البرمجية هي".
+اطبع اللغة.
+اطبع "ومبرمجي وكاتبي هو ".
+اطبع الكاتب.
+	`)
+area.addEventListener('keyup', e => {
+	if (e.key === "Enter") {
+		try {
+			evaluate(area.value, modifyContent)
 		}
-		else if (e.key === "Backspace") {
-			display.textContent = ""
+		catch (err) {
+			modifyContent(err.message)
+			console.log(err)
 		}
-	})
+	}
+	else if (e.key === "Backspace") {
+		display.textContent = ""
+	}
+})
 })
