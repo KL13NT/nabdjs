@@ -16,7 +16,8 @@ export function evaluate(program, hook) {
 		const syntaxTree = Parser.parse(program)
 
 		syntaxTree.forEach(node => {
-			result.push(ExpressionEvaluator.eval(scope, node))
+			const evalResult = ExpressionEvaluator.eval(scope, node)
+			if (evalResult) result.push(evalResult)
 		})
 
 	}
@@ -25,6 +26,7 @@ export function evaluate(program, hook) {
 		console.log(err)
 	}
 
+	console.log(result)
 	hook(result)
 	return result
 }

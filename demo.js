@@ -4,7 +4,7 @@ const area = document.querySelector('textarea')
 const display = document.querySelector('span')
 
 function modifyContent(returned) {
-	display.textContent = returned.toString().replace(/"/g, "")
+	display.innerHTML = returned.join('<br>').replace(/"/g, "")
 }
 
 window.addEventListener('load', () => {
@@ -17,7 +17,7 @@ window.addEventListener('load', () => {
 
 # حدد: لعمل المتغيرات (variables) و دول global دايماً. مثال ليها:
 حدد اسمي = "نبيل".
-
+حدد اللغة = "نبض".
 # لو: لعمل الشروط و الاكواد الشرطية (if conditionals). مثال ليها:
 لو اسمي == "نبيل": اطبع اسمي.
 
@@ -28,6 +28,9 @@ window.addEventListener('load', () => {
 اطبع "مرحباً بكم".
 
 # الاوامر (كرر, لو) تقدروا تعملوهم جوا بعض (nested) و تقدروا تسجلوا قيم متغيرات في متغيرات تانية.
+كرر 3: لو اسمي == "نبيل": لو اللغة == "نبض": اطبع "اهلاً وسهلاً".
+
+# الكود بيتم تشغيلة بشكل تلقائي لما تعدلوا عليه
 `
 	area.addEventListener('keyup', e => {
 		evaluate(area.value, modifyContent)

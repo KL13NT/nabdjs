@@ -11,14 +11,19 @@
 	box-sizing: border-box;
 }
 
+body, html {
+	height: 100%
+}
+
 body > textarea:nth-child(1) {
   box-sizing: border-box;
   width: 100%;
   padding: 1rem;
   box-shadow: 0 2px 8px 0 rgba(0,0,0,0.3);
-  height: 90vh;
+  height: 80%;
 	direction: rtl;
-	font-size: inherit
+	font-size: inherit;
+	overflow: auto;
 }
 
 
@@ -34,8 +39,9 @@ body > span:nth-child(2) {
 	box-sizing: border-box;
 	padding: 0.5rem;
 	font-size: 1rem;
-	position: fixed;
 	bottom: 0;
 	margin: 0;
 	background: white;
+	height: 20%;
+	overflow: auto;
 }
