@@ -22,7 +22,7 @@ export class Parser {
 		else if (line.startsWith("لو")) return IfStatementGenerator.generate(line)
 		else if (line.startsWith("كرر")) return RepeatStatementGenerator.generate(line)
 		else if (line.startsWith("اطبع")) return ConsoleStatementGenerator.generate(line)
-		else if (line.trim() === "") throw new ParsingError(Nabd0005, line)
+		else if (line.trim() === "") return ""
 		else throw new ParsingError(Nabd0006, line)
 	}
 

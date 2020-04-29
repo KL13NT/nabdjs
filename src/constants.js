@@ -4,7 +4,7 @@ const ERROR_GENERIC = "حصل خطأ في التشغيل"
 const ERROR_VARIABLE_NOT_DEFINED = "المتغير ده مش موجود"
 const ERROR_COMPARISON_TYPES_NOT_IDENTICAL = "مينفعش تقارن متغيرين من نوعين مختلفين"
 const ERROR_COMPARISON_NONEQUALITY_DIFFERENT_TYPES = "مينفعش تستخدم المعامل > او < في المقارنة بين انواع غير الارقام"
-const ERROR_EMPTY_LINES_NOT_ALLOWED = "الاسطر الفاضية مش مسموح بيها"
+const DEPRECATED_ERROR_EMPTY_LINES_NOT_ALLOWED = "الاسطر الفاضية مش مسموح بيها"
 const ERROR_PARSING_GENERIC = "خطأ في بناء الأمر"
 const ERROR_MISTACHING_TYPES = "المفروض نوع القيمة دي يكون مختلف"
 const ERROR_BIGGER_THAN_INFINITY = "مينفعش تستخدم متغير اكبر من انفينيتي"
@@ -16,7 +16,7 @@ const ERRORS = {
 	Nabd0002: ERROR_VARIABLE_NOT_DEFINED,
 	Nabd0003: ERROR_COMPARISON_TYPES_NOT_IDENTICAL,
 	Nabd0004: ERROR_COMPARISON_NONEQUALITY_DIFFERENT_TYPES,
-	Nabd0005: ERROR_EMPTY_LINES_NOT_ALLOWED,
+	Nabd0005: DEPRECATED_ERROR_EMPTY_LINES_NOT_ALLOWED,
 	Nabd0006: ERROR_PARSING_GENERIC,
 	Nabd0007: ERROR_MISTACHING_TYPES,
 	Nabd0008: ERROR_BIGGER_THAN_INFINITY,

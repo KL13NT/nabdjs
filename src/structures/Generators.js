@@ -85,7 +85,7 @@ export class IfStatementGenerator extends Generator {
  */
 export class ConsoleStatementGenerator extends Generator {
 	static generate(line) {
-		const match = line.match(/^(اطبع)( +)([\u0600-\u06FF +]+|\\?"[\u0600-\u06FF +]+\\?")( +)?\.$/)
+		const match = line.match(/^(اطبع)( +)([\u0600-\u06FF\w+ +]+|"[\u0600-\u06FF\w+ +]+")( +)?\.$/)
 
 		if (match) {
 			const param = match[3]
