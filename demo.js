@@ -8,14 +8,6 @@ function modifyContent(returned) {
 }
 
 window.addEventListener('load', () => {
-	modifyContent(`
-	حدد اللغة = "نبض".
-	حدد الكاتب = "نبيل ثروت".
-	 اطبع "لغتي البرمجية هي".
-اطبع اللغة.
-اطبع "ومبرمجي وكاتبي هو ".
-اطبع الكاتب.
-	`)
 	area.addEventListener('keyup', e => {
 		if (e.key === "Enter") {
 			try {
