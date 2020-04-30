@@ -48,8 +48,10 @@ export class VariableDeclarationEvaluator {
 		if (type === "string" || type === "number") scope[name] = value
 		else if (type === "variable") {
 			if (!scope[value]) throw new EvaluationError(Nabd0002, expr)
+
 			// Functions are stored in global scope as objects while variables are primitives
-			if (typeof scope[value] == "object") throw new EvaluationError(Nabd0011, expr)
+			if (typeof scope[value] == "object")
+				throw new EvaluationError(Nabd0011, expr)
 
 			scope[name] = scope[value]
 		}
@@ -101,7 +103,11 @@ export class IfStatementEvaluator {
 	 * @param {object} expr
 	 */
 	static compare({ rightValue, leftValue, type, operator }) {
-		if ((operator === "<" || operator === ">") && type !== "number") throw new EvaluationError(Nabd0004, `${ rightValue }${ operator }${ leftValue }`)
+		if ((operator === "<" || operator === ">") && type !== "number")
+			throw new EvaluationError(
+				Nabd0004,
+				`${ rightValue }${ operator }${ leftValue }`
+			)
 
 		if (operator === "<") return leftValue < rightValue
 		else if (operator === ">") return leftValue > rightValue
@@ -116,13 +122,25 @@ export class IfStatementEvaluator {
 	static isTrue(expr, scope) {
 		const { right, left, type, operator, isNegated } = expr
 
-		const rightValue = right.type === "variable" ? getVariable(scope, right.name) : right.value
-		const leftValue = left.type === "variable" ? getVariable(scope, left.name) : left.value
+		const rightValue = right.type === "variable"
+			? getVariable(scope, right.name)
+			: right.value
 
-		if (typeof rightValue !== typeof leftValue) throw new EvaluationError(Nabd0003, expr)
+		const leftValue = left.type === "variable"
+			? getVariable(scope, left.name)
+			: left.value
+
+		if (typeof rightValue !== typeof leftValue)
+			throw new EvaluationError(Nabd0003, expr)
 
 		// passing right.type only since both are gonna be same type anyway
-		const result = this.compare({ rightValue, leftValue, type: right.type, operator })
+		const result = this.compare({
+			rightValue,
+			leftValue,
+			type: right.type,
+			operator
+		})
+
 		return isNegated ? !result : result
 	}
 }
@@ -156,24 +174,6 @@ export class RepeatStatementEvaluator {
 		}
 
 		return result
-	}
-
-	/**
-	 * Determines whether if statement condition is truthy
-	 * @param {object} expr
-	 * @param {object} scope
-	 */
-	static isTrue(expr, scope) {
-		const { right, left, type, operator, isNegated } = expr
-
-		const rightValue = right.type === "variable" ? getVariable(scope, right.name) : right.value
-		const leftValue = left.type === "variable" ? getVariable(scope, left.name) : left.value
-
-		if (typeof rightValue !== typeof leftValue) throw new EvaluationError(Nabd0003, expr)
-
-		// passing right.type only since both are gonna be same type anyway
-		const result = this.compare({ rightValue, leftValue, type: right.type, operator })
-		return isNegated ? !result : result
 	}
 }
 
@@ -210,6 +210,13 @@ export class CallExpressionEvaluator {
 	 * @param {object} globalScope scope, but global
 	 * @param {object} expr
 	 */
+
+	static prepareParams({ globalScope, func, param, raw }) {
+		const paramObject = globalScope[param.value] || new VariableDeclaration(func.declaration.param, param.value, raw)
+
+		if (!globalScope[param.value]) VariableDeclarationEvaluator.eval(functionScope, paramObject)
+	}
+
 	static eval(globalScope, expr) {
 		const { name, param, raw } = expr
 		const func = globalScope[name]
@@ -221,11 +228,7 @@ export class CallExpressionEvaluator {
 				// Create local function scope and add param value to it, then pass that scope to the function body expr.
 				const functionScope = {}
 
-				if (param) {
-					const paramObject = globalScope[param.value] || new VariableDeclaration(func.declaration.param, param.value, raw)
-
-					if (!globalScope[param.value]) VariableDeclarationEvaluator.eval(functionScope, paramObject)
-				}
+				if (param) this.prepareParams({ globalScope, func, param, raw })
 
 				return ExpressionEvaluator.eval(functionScope, func.declaration.body)
 			}
