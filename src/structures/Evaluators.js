@@ -222,12 +222,12 @@ export class CallExpressionEvaluator {
 			else {
 				// Create local function scope and add param value to it, then pass that scope to the function body expr during execution.
 				const functionScope = {}
-				const paramObject = new VariableDeclaration(func.declaration.param, param.value, raw)
+				const paramObject = globalScope[param.value] || new VariableDeclaration(func.declaration.param, param.value, raw)
 
-				VariableDeclarationEvaluator.eval(functionScope, paramObject)
+				if (!globalScope[param.value]) VariableDeclarationEvaluator.eval(functionScope, paramObject)
+
+
 				return ExpressionEvaluator.eval(functionScope, func.declaration.body)
-
-				// handling for function call
 			}
 		}
 	}
