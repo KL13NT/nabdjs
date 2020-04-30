@@ -1,7 +1,6 @@
 import { formatValue, getVariable } from '../utils.js'
 import { EvaluationError, GenericError } from './Errors.js'
 import { VariableDeclaration } from './Declarations.js'
-/**@typedef { import ('./Declarations.js').FunctionDeclaration } FunctionDeclaration */
 
 /**
  * @class

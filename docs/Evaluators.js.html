@@ -28,6 +28,7 @@
         <article>
             <pre class="prettyprint source linenums"><code>import { formatValue, getVariable } from '../utils.js'
 import { EvaluationError, GenericError } from './Errors.js'
+import { VariableDeclaration } from './Declarations.js'
 
 /**
  * @class
@@ -41,12 +42,18 @@ export class ExpressionEvaluator {
 	static eval(scope, expr) {
 		const { type } = expr
 
-		if (type === "VariableDeclaration")
-			return VariableDeclarationEvaluator.eval(scope, expr)
-		else if (type === "ConsoleStatement")
-			return ConsoleStatementEvaluator.eval(scope, expr)
-		else if (type === "IfStatement")
-			return IfStatementEvaluator.eval(scope, expr)
+		const evaluators = {
+			VariableDeclarationEvaluator,
+			ConsoleStatementEvaluator,
+			IfStatementEvaluator,
+			RepeatStatementEvaluator,
+			FunctionDeclarationEvaluator,
+			CallExpressionEvaluator
+		}
+
+		const evaluator = evaluators[`${ type }Evaluator`]
+
+		if (evaluator) return evaluator.eval(scope, expr)
 		else throw new GenericError(Nabd0001, expr)
 	}
 }
@@ -55,7 +62,7 @@ export class ExpressionEvaluator {
 /**
  * @class
  */
-export class VariableDeclarationEvaluator {
+class VariableDeclarationEvaluator {
 	/**
 	 * Evaluatues variable declarations
 	 * @param {object} scope
@@ -69,6 +76,10 @@ export class VariableDeclarationEvaluator {
 		else if (type === "variable") {
 			if (!scope[value]) throw new EvaluationError(Nabd0002, expr)
 
+			// Functions are stored in global scope as objects while variables are primitives
+			if (typeof scope[value] == "object")
+				throw new EvaluationError(Nabd0011, expr)
+
 			scope[name] = scope[value]
 		}
 		else new GenericError(Nabd0001, expr)
@@ -78,7 +89,7 @@ export class VariableDeclarationEvaluator {
 /**
  * @class
  */
-export class ConsoleStatementEvaluator {
+class ConsoleStatementEvaluator {
 	/**
 	 * Evaluatues console statements
 	 * @param {object} scope
@@ -91,17 +102,18 @@ export class ConsoleStatementEvaluator {
 		if (type === "string" || type === "number") return value
 		else if (type === "variable") {
 			if (!scope[value]) throw new EvaluationError(Nabd0002, expr)
+			if (typeof scope[value] == "object") throw new EvaluationError(Nabd0010, expr)
 
 			return scope[value]
 		}
-		else GenericError(Nabd0001, expr)
+		else new GenericError(Nabd0001, expr)
 	}
 }
 
 /**
  * @class
  */
-export class IfStatementEvaluator {
+class IfStatementEvaluator {
 	/**
 	 * Evaluatues if statements
 	 * @param {object} scope
@@ -118,7 +130,11 @@ export class IfStatementEvaluator {
 	 * @param {object} expr
 	 */
 	static compare({ rightValue, leftValue, type, operator }) {
-		if ((operator === "&lt;" || operator === ">") &amp;&amp; type !== "number") throw new EvaluationError(Nabd0004, `${ rightValue }${ operator }${ leftValue }`)
+		if ((operator === "&lt;" || operator === ">") &amp;&amp; type !== "number")
+			throw new EvaluationError(
+				Nabd0004,
+				`${ rightValue }${ operator }${ leftValue }`
+			)
 
 		if (operator === "&lt;") return leftValue &lt; rightValue
 		else if (operator === ">") return leftValue > rightValue
@@ -133,14 +149,117 @@ export class IfStatementEvaluator {
 	static isTrue(expr, scope) {
 		const { right, left, type, operator, isNegated } = expr
 
-		const rightValue = right.type === "variable" ? getVariable(scope, right.name) : right.value
-		const leftValue = left.type === "variable" ? getVariable(scope, left.name) : left.value
+		const rightValue = right.type === "variable"
+			? getVariable(scope, right.name)
+			: right.value
 
-		if (typeof rightValue !== typeof leftValue) throw new EvaluationError(Nabd0003, expr)
+		const leftValue = left.type === "variable"
+			? getVariable(scope, left.name)
+			: left.value
+
+		if (typeof rightValue !== typeof leftValue)
+			throw new EvaluationError(Nabd0003, expr)
 
 		// passing right.type only since both are gonna be same type anyway
-		const result = this.compare({ rightValue, leftValue, type: right.type, operator })
+		const result = this.compare({
+			rightValue,
+			leftValue,
+			type: right.type,
+			operator
+		})
+
 		return isNegated ? !result : result
+	}
+}
+
+/**
+ * @class
+ */
+class RepeatStatementEvaluator {
+	/**
+	 * Evaluatues if statements
+	 * @param {object} scope
+	 * @param {object} expr
+	 */
+	static eval(scope, expr) {
+		const { count, consequent } = expr
+
+		return this.repeat(scope, count, consequent)
+	}
+
+	/**
+	 * Compares the two given values using the respective operator
+	 * @param {object} expr
+	 */
+	static repeat(scope, count, consequent) {
+		const result = []
+
+		if (count >= Infinity) throw new EvaluationError(Nabd0008, consequent)
+
+		for (let i = 0; i &lt; count; i++) {
+			result.push(ExpressionEvaluator.eval(scope, consequent))
+		}
+
+		return result
+	}
+}
+
+/**
+ * @class
+ */
+class FunctionDeclarationEvaluator {
+	/**
+	 * Evaluatues variable declarations
+	 * @param {object} globalScope scope, but global
+	 * @param {object} expr
+	 */
+	static eval(globalScope, expr) {
+		const { raw, declaration } = expr
+		const { name, param, body } = declaration
+		const extant = globalScope[name]
+
+		if (extant) {
+			if (typeof extant == "object") throw new EvaluationError(Nabd0012, expr)
+			else throw new EvaluationError(Nabd0013, expr)
+		}
+		else {
+			globalScope[name] = expr
+		}
+	}
+}
+
+/**
+ * @class
+ */
+class CallExpressionEvaluator {
+	/**
+	 * Evaluatues variable declarations
+	 * @param {object} globalScope scope, but global
+	 * @param {object} expr
+	 */
+
+	static prepareParams({ globalScope, func, param, raw }) {
+		const paramObject = globalScope[param.value] || new VariableDeclaration(func.declaration.param, param.value, raw)
+
+		if (!globalScope[param.value]) VariableDeclarationEvaluator.eval(functionScope, paramObject)
+	}
+
+	static eval(globalScope, expr) {
+		const { name, param, raw } = expr
+		const func = globalScope[name]
+
+		if (!func) throw new EvaluationError(Nabd0002, expr)
+		else {
+			if (typeof func !== "object") throw new EvaluationError(Nabd0014, expr)
+			else {
+				// Create local function scope and add param value to it, then pass that scope to the function body expr.
+				const functionScope = {}
+
+				if (param) this.prepareParams({ globalScope, func, param, raw })
+
+				return ExpressionEvaluator.eval(functionScope, func.declaration.body)
+			}
+		}
 	}
 }</code></pre>
         </article>
@@ -152,13 +271,13 @@ export class IfStatementEvaluator {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ConsoleStatement.html">ConsoleStatement</a></li><li><a href="ConsoleStatementEvaluator.html">ConsoleStatementEvaluator</a></li><li><a href="ConsoleStatementGenerator.html">ConsoleStatementGenerator</a></li><li><a href="EvaluationError_EvaluationError.html">EvaluationError</a></li><li><a href="ExpressionEvaluator.html">ExpressionEvaluator</a></li><li><a href="Generator.html">Generator</a></li><li><a href="GenericError_GenericError.html">GenericError</a></li><li><a href="IfStatement.html">IfStatement</a></li><li><a href="IfStatementEvaluator.html">IfStatementEvaluator</a></li><li><a href="IfStatementGenerator.html">IfStatementGenerator</a></li><li><a href="Node.html">Node</a></li><li><a href="Parser.html">Parser</a></li><li><a href="ParsingError_ParsingError.html">ParsingError</a></li><li><a href="VariableDeclaration.html">VariableDeclaration</a></li><li><a href="VariableDeclarationEvaluator.html">VariableDeclarationEvaluator</a></li><li><a href="VariableDeclarationGenerator.html">VariableDeclarationGenerator</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CallExpression.html">CallExpression</a></li><li><a href="CallExpressionEvaluator.html">CallExpressionEvaluator</a></li><li><a href="CallExpressionGenerator.html">CallExpressionGenerator</a></li><li><a href="ConsoleStatement.html">ConsoleStatement</a></li><li><a href="ConsoleStatementEvaluator.html">ConsoleStatementEvaluator</a></li><li><a href="ConsoleStatementGenerator.html">ConsoleStatementGenerator</a></li><li><a href="EvaluationError_EvaluationError.html">EvaluationError</a></li><li><a href="ExpressionEvaluator.html">ExpressionEvaluator</a></li><li><a href="FunctionDeclaration.html">FunctionDeclaration</a></li><li><a href="FunctionDeclarationEvaluator.html">FunctionDeclarationEvaluator</a></li><li><a href="FunctionDeclarationGenerator.html">FunctionDeclarationGenerator</a></li><li><a href="Generator.html">Generator</a></li><li><a href="GenericError_GenericError.html">GenericError</a></li><li><a href="IfStatement.html">IfStatement</a></li><li><a href="IfStatementEvaluator.html">IfStatementEvaluator</a></li><li><a href="IfStatementGenerator.html">IfStatementGenerator</a></li><li><a href="Node.html">Node</a></li><li><a href="Parser.html">Parser</a></li><li><a href="ParsingError_ParsingError.html">ParsingError</a></li><li><a href="RepeatStatement.html">RepeatStatement</a></li><li><a href="RepeatStatementEvaluator.html">RepeatStatementEvaluator</a></li><li><a href="RepeatStatementGenerator.html">RepeatStatementGenerator</a></li><li><a href="VariableDeclaration.html">VariableDeclaration</a></li><li><a href="VariableDeclarationEvaluator.html">VariableDeclarationEvaluator</a></li><li><a href="VariableDeclarationGenerator.html">VariableDeclarationGenerator</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.2</a> on Wed Apr 29 2020 17:57:50 GMT+0200 (Eastern European Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.2</a> on Thu Apr 30 2020 22:39:17 GMT+0200 (Eastern European Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

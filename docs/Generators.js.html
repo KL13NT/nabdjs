@@ -26,10 +26,14 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import {
+            <pre class="prettyprint source linenums"><code>import { Parser } from './Parser.js'
+import {
 	VariableDeclaration,
 	IfStatement,
-	ConsoleStatement
+	ConsoleStatement,
+	RepeatStatement,
+	FunctionDeclaration,
+	CallExpression
 } from './Declarations.js'
 
 import {
@@ -37,7 +41,6 @@ import {
 	EvaluationError
 } from './Errors.js'
 
-import { Parser } from './Parser.js'
 
 /**
  * @class
@@ -46,11 +49,11 @@ import { Parser } from './Parser.js'
 class Generator {
 	/**
 	 * Generates respective ST nodes
-	 * @param {string} line
+	 * @param {string} raw
 	 * @static
 	 * @override
 	 */
-	static generate(line) { }
+	static generate(raw) { }
 }
 
 
@@ -60,17 +63,16 @@ class Generator {
  * @extends Generator
  */
 export class VariableDeclarationGenerator extends Generator {
-	static generate(line) {
-		const variableNameRegex = /^([\u0600-\u06FF]+)$/
-		const match = line.match(/^(حدد)( +)([\u0600-\u06FF]+)( +)?=( +)?(.+\.)$/)
+	static generate(raw) {
+		const match = raw.match(RX_VARIABLE_DECLARATION)
 
 		if (match) {
 			const name = match[3]
 			const value = match[6].replace('.', '')
 
-			return new VariableDeclaration(name, value, line)
+			return new VariableDeclaration(name, value, raw)
 		}
-		else throw new ParsingError(`في حاجة غلط وانت بتعمل متغير`, line)
+		else throw new ParsingError(`في حاجة غلط وانت بتعمل متغير`, raw)
 	}
 }
 
@@ -80,8 +82,8 @@ export class VariableDeclarationGenerator extends Generator {
  * @extends Generator
  */
 export class IfStatementGenerator extends Generator {
-	static generate(line) {
-		const match = line.match(/^(لو)( +)([\u0600-\u06FF]+|"[\u0600-\u06FF\w+ +]+"|[0-9]+)( +)?(!)?(>|&lt;|==)( +)?([\u0600-\u06FF]+|"[\u0600-\u06FF\w+ +]+"|[0-9]+)( +)?(:.+\.)$/)
+	static generate(raw) {
+		const match = raw.match(RX_IF_STATEMENT)
 
 		if (match) {
 			const left = match[3]
@@ -89,11 +91,18 @@ export class IfStatementGenerator extends Generator {
 			const isNegated = match[5]
 			const operator = match[6]
 			const expr = match[10]
-			const consequent = Parser.parseLine(expr.replace(/:/g, '').trim())
+			const consequent = Parser.parseLine(expr.replace(":", '').trim())
 
-			return new IfStatement({ right, left, operator, isNegated, consequent })
+			return new IfStatement({
+				right,
+				left,
+				operator,
+				isNegated,
+				consequent,
+				raw: raw
+			})
 		}
-		else throw new ParsingError(`في حاجة غلط وانت بتعمل الشرط`, line)
+		else throw new ParsingError(`في حاجة غلط وانت بتعمل الشرط`, raw)
 	}
 }
 
@@ -103,16 +112,88 @@ export class IfStatementGenerator extends Generator {
  * @extends Generator
  */
 export class ConsoleStatementGenerator extends Generator {
-	static generate(line) {
-		const match = line.match(/^(اطبع)( +)([\u0600-\u06FF +]+|"[\u0600-\u06FF +]+")( +)?\.$/)
+	static generate(raw) {
+		const match = raw.match(RX_CONSOLE_STATEMENT)
 
-		console.log("print line", line, match)
 		if (match) {
 			const param = match[3]
 
-			return new ConsoleStatement(param)
+			return new ConsoleStatement(param, raw)
 		}
-		else throw new ParsingError(`في حاجة غلط في الطباعة`, line)
+		else throw new ParsingError(`في حاجة غلط في الطباعة`, raw)
+	}
+}
+
+
+/**
+ * @class
+ * @abstract
+ * @extends Generator
+ */
+export class RepeatStatementGenerator extends Generator {
+	static generate(raw) {
+		const match = raw.match(RX_REPEAT_STATEMENT)
+
+		if (match) {
+			const count = Number(match[3])
+			const expr = match[5]
+			const consequent = Parser.parseLine(
+				unescape(
+					expr
+						.replace(":", '')
+						.trim()
+				)
+			)
+
+			if (isNaN(count)) throw new ParsingError(Nabd, expr)
+
+			return new RepeatStatement({ count, consequent, raw })
+		}
+		else throw new ParsingError(`في حاجة غلط وانت بتعمل الشرط`, raw)
+	}
+}
+
+/**
+ * @class
+ * @abstract
+ * @extends Generator
+ */
+export class FunctionDeclarationGenerator extends Generator {
+	static generate(raw) {
+		const match = raw.match(RX_FUNCTION_DECLARATION)
+
+		if (match) {
+			const name = match[1]
+			const param = match[2]
+			const expr = match[3]
+			const body = Parser.parseLine(expr.trim())
+
+			return new FunctionDeclaration({
+				name,
+				param,
+				body,
+				raw
+			})
+		}
+		else throw new ParsingError(`في حاجة غلط وانت بتعمل الدالة`, raw)
+	}
+}
+/**
+ * @class
+ * @abstract
+ * @extends Generator
+ */
+export class CallExpressionGenerator extends Generator {
+	static generate(raw) {
+		const match = raw.match(RX_CALL_EXPRESSION)
+
+		if (match) {
+
+			const name = match[1]
+			const param = match[2]
+			return new CallExpression(name, param, raw)
+		}
+		else throw new ParsingError(`في حاجة غلط وانت بتعمل الدالة`, raw)
 	}
 }</code></pre>
         </article>
@@ -124,13 +205,13 @@ export class ConsoleStatementGenerator extends Generator {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ConsoleStatement.html">ConsoleStatement</a></li><li><a href="ConsoleStatementEvaluator.html">ConsoleStatementEvaluator</a></li><li><a href="ConsoleStatementGenerator.html">ConsoleStatementGenerator</a></li><li><a href="EvaluationError_EvaluationError.html">EvaluationError</a></li><li><a href="ExpressionEvaluator.html">ExpressionEvaluator</a></li><li><a href="Generator.html">Generator</a></li><li><a href="GenericError_GenericError.html">GenericError</a></li><li><a href="IfStatement.html">IfStatement</a></li><li><a href="IfStatementEvaluator.html">IfStatementEvaluator</a></li><li><a href="IfStatementGenerator.html">IfStatementGenerator</a></li><li><a href="Node.html">Node</a></li><li><a href="Parser.html">Parser</a></li><li><a href="ParsingError_ParsingError.html">ParsingError</a></li><li><a href="VariableDeclaration.html">VariableDeclaration</a></li><li><a href="VariableDeclarationEvaluator.html">VariableDeclarationEvaluator</a></li><li><a href="VariableDeclarationGenerator.html">VariableDeclarationGenerator</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CallExpression.html">CallExpression</a></li><li><a href="CallExpressionEvaluator.html">CallExpressionEvaluator</a></li><li><a href="CallExpressionGenerator.html">CallExpressionGenerator</a></li><li><a href="ConsoleStatement.html">ConsoleStatement</a></li><li><a href="ConsoleStatementEvaluator.html">ConsoleStatementEvaluator</a></li><li><a href="ConsoleStatementGenerator.html">ConsoleStatementGenerator</a></li><li><a href="EvaluationError_EvaluationError.html">EvaluationError</a></li><li><a href="ExpressionEvaluator.html">ExpressionEvaluator</a></li><li><a href="FunctionDeclaration.html">FunctionDeclaration</a></li><li><a href="FunctionDeclarationEvaluator.html">FunctionDeclarationEvaluator</a></li><li><a href="FunctionDeclarationGenerator.html">FunctionDeclarationGenerator</a></li><li><a href="Generator.html">Generator</a></li><li><a href="GenericError_GenericError.html">GenericError</a></li><li><a href="IfStatement.html">IfStatement</a></li><li><a href="IfStatementEvaluator.html">IfStatementEvaluator</a></li><li><a href="IfStatementGenerator.html">IfStatementGenerator</a></li><li><a href="Node.html">Node</a></li><li><a href="Parser.html">Parser</a></li><li><a href="ParsingError_ParsingError.html">ParsingError</a></li><li><a href="RepeatStatement.html">RepeatStatement</a></li><li><a href="RepeatStatementEvaluator.html">RepeatStatementEvaluator</a></li><li><a href="RepeatStatementGenerator.html">RepeatStatementGenerator</a></li><li><a href="VariableDeclaration.html">VariableDeclaration</a></li><li><a href="VariableDeclarationEvaluator.html">VariableDeclarationEvaluator</a></li><li><a href="VariableDeclarationGenerator.html">VariableDeclarationGenerator</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.2</a> on Wed Apr 29 2020 17:57:50 GMT+0200 (Eastern European Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.2</a> on Thu Apr 30 2020 22:39:17 GMT+0200 (Eastern European Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
