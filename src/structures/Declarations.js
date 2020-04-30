@@ -177,7 +177,7 @@ export class CallExpression extends Node {
 		super("CallExpression")
 
 		this.name = name
-		this.param = {
+		if (param) this.param = {
 			type: inferType(param),
 			value: formatValue(param)
 		}

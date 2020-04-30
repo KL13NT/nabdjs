@@ -212,20 +212,20 @@ export class CallExpressionEvaluator {
 	 */
 	static eval(globalScope, expr) {
 		const { name, param, raw } = expr
-
-		/** @type {FunctionDeclaration} */
 		const func = globalScope[name]
-		//FIXME: debug and fix
+
 		if (!func) throw new EvaluationError(Nabd0002, expr)
 		else {
 			if (typeof func !== "object") throw new EvaluationError(Nabd0014, expr)
 			else {
-				// Create local function scope and add param value to it, then pass that scope to the function body expr during execution.
+				// Create local function scope and add param value to it, then pass that scope to the function body expr.
 				const functionScope = {}
-				const paramObject = globalScope[param.value] || new VariableDeclaration(func.declaration.param, param.value, raw)
 
-				if (!globalScope[param.value]) VariableDeclarationEvaluator.eval(functionScope, paramObject)
+				if (param) {
+					const paramObject = globalScope[param.value] || new VariableDeclaration(func.declaration.param, param.value, raw)
 
+					if (!globalScope[param.value]) VariableDeclarationEvaluator.eval(functionScope, paramObject)
+				}
 
 				return ExpressionEvaluator.eval(functionScope, func.declaration.body)
 			}

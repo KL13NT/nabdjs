@@ -17,8 +17,8 @@ const ERROR_CALL_TO_NONFUNC = "مينفعش تشغل حاجة بالشكل ده 
 
 const RX_CONSOLE_STATEMENT = /^(اطبع)( +)([\u0600-\u06FF\w+ +]+|"[\u0600-\u06FF\w+ +]+")( +)?\.$/
 const RX_REPEAT_STATEMENT = /^(كرر)( +)([0-9]+)( +)?(:.+\.)$/
-const RX_FUNCTION_DECLARATION = /^دالة +([\u0600-\u06FF]+) *?\( *?([\u0600-\u06FF]+) *?\) *?= *?(.+\.)$/
-const RX_CALL_EXPRESSION = /^([\u0600-\u06FF]+) *?\( *?([\u0600-\u06FF]+|"[\u0600-\u06FF\w+ +]+"|[0-9]+) *?\)\.$/
+const RX_FUNCTION_DECLARATION = /^دالة +([\u0600-\u06FF]+) *?\( *?([\u0600-\u06FF]+)? *?\) *?= *?(.+\.)$/
+const RX_CALL_EXPRESSION = /^([\u0600-\u06FF]+) *?\( *?([\u0600-\u06FF]+|"[\u0600-\u06FF\w+ +]+"|[0-9]+)? *?\)\.$/
 const RX_IF_STATEMENT = /^(لو)( +)([\u0600-\u06FF]+|"[\u0600-\u06FF\w+ +]+"|[0-9]+)( +)?(!)?(>|<|==)( +)?([\u0600-\u06FF]+|"[\u0600-\u06FF\w+ +]+"|[0-9]+)( +)?(:.+\.)$/
 const RX_VARIABLE_DECLARATION = /^(حدد)( +)([\u0600-\u06FF]+)( +)?=( +)?(.+\.)$/
 const RX_COMMENT = /^#/
