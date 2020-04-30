@@ -19,14 +19,19 @@ export class Parser {
 	static parseLine(input) {
 		const line = input.trim()
 
-		if (line.startsWith("#")) return ""
-		else if (line.startsWith("حدد")) return VariableDeclarationGenerator.generate(line)
-		else if (line.startsWith("لو")) return IfStatementGenerator.generate(line)
-		else if (line.startsWith("كرر")) return RepeatStatementGenerator.generate(line)
-		else if (/^(اطبع)( +)([\u0600-\u06FF\w+ +]+|"[\u0600-\u06FF\w+ +]+")( +)?\.$/.test(line)) return ConsoleStatementGenerator.generate(line)
-		else if (line.startsWith("دالة")) return FunctionDeclarationGenerator.generate(line)
-		else if (/^([\u0600-\u06FF]+) *?\( *?([\u0600-\u06FF]+|"[\u0600-\u06FF\w+ +]+"|[0-9]+) *?\)\.$/.test(line)) return CallExpressionGenerator.generate(line)
-		else if (line.trim() === "") return ""
+		if (RX_COMMENT.test(line) || line.trim() === "") return ""
+		else if (RX_VARIABLE_DECLARATION.test(line))
+			return VariableDeclarationGenerator.generate(line)
+		else if (RX_IF_STATEMENT.test(line))
+			return IfStatementGenerator.generate(line)
+		else if (RX_REPEAT_STATEMENT.test(line))
+			return RepeatStatementGenerator.generate(line)
+		else if (RX_CONSOLE_STATEMENT.test(line))
+			return ConsoleStatementGenerator.generate(line)
+		else if (RX_FUNCTION_DECLARATION.test(line))
+			return FunctionDeclarationGenerator.generate(line)
+		else if (RX_CALL_EXPRESSION.test(line))
+			return CallExpressionGenerator.generate(line)
 		else throw new ParsingError(Nabd0006, line)
 	}
 

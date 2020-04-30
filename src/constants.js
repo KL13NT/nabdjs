@@ -15,7 +15,14 @@ const ERROR_FUNC_ALREADY_DECLARED = "الدالة دي موجودة مسبقاً
 const ERROR_ASSIGN_FUNC_TO_VARIABLE = "مينفعش اخزن دالة في متغير"
 const ERROR_CALL_TO_NONFUNC = "مينفعش تشغل حاجة بالشكل ده الا الدوال"
 
-//REFACTORME: move all regex here
+//REFACTORME: move all RX here
+const RX_CONSOLE_STATEMENT = /^(اطبع)( +)([\u0600-\u06FF\w+ +]+|"[\u0600-\u06FF\w+ +]+")( +)?\.$/
+const RX_REPEAT_STATEMENT = /^(كرر)( +)([0-9]+)( +)?(:.+\.)$/
+const RX_FUNCTION_DECLARATION = /^دالة +([\u0600-\u06FF]+) *?\( *?([\u0600-\u06FF]+) *?\) *?= *?(.+\.)$/
+const RX_CALL_EXPRESSION = /^([\u0600-\u06FF]+) *?\( *?([\u0600-\u06FF]+|"[\u0600-\u06FF\w+ +]+"|[0-9]+) *?\)\.$/
+const RX_IF_STATEMENT = /^(لو)( +)([\u0600-\u06FF]+|"[\u0600-\u06FF\w+ +]+"|[0-9]+)( +)?(!)?(>|<|==)( +)?([\u0600-\u06FF]+|"[\u0600-\u06FF\w+ +]+"|[0-9]+)( +)?(:.+\.)$/
+const RX_VARIABLE_DECLARATION = /^(حدد)( +)([\u0600-\u06FF]+)( +)?=( +)?(.+\.)$/
+const RX_COMMENT = /^#/
 
 const ERRORS = {
 	Nabd0001: ERROR_GENERIC,
@@ -34,4 +41,15 @@ const ERRORS = {
 	Nabd0014: ERROR_CALL_TO_NONFUNC
 }
 
+const REGEX = {
+	RX_CONSOLE_STATEMENT,
+	RX_REPEAT_STATEMENT,
+	RX_FUNCTION_DECLARATION,
+	RX_CALL_EXPRESSION,
+	RX_IF_STATEMENT,
+	RX_VARIABLE_DECLARATION,
+	RX_COMMENT
+}
+
 Object.assign(GLOBAL_CONTEXT, ERRORS)
+Object.assign(GLOBAL_CONTEXT, REGEX)

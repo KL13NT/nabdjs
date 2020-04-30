@@ -36,8 +36,7 @@ class Generator {
  */
 export class VariableDeclarationGenerator extends Generator {
 	static generate(line) {
-		const variableNameRegex = /^([\u0600-\u06FF]+)$/
-		const match = line.match(/^(حدد)( +)([\u0600-\u06FF]+)( +)?=( +)?(.+\.)$/)
+		const match = line.match(RX_VARIABLE_DECLARATION)
 
 		if (match) {
 			const name = match[3]
@@ -56,7 +55,7 @@ export class VariableDeclarationGenerator extends Generator {
  */
 export class IfStatementGenerator extends Generator {
 	static generate(line) {
-		const match = line.match(/^(لو)( +)([\u0600-\u06FF]+|"[\u0600-\u06FF\w+ +]+"|[0-9]+)( +)?(!)?(>|<|==)( +)?([\u0600-\u06FF]+|"[\u0600-\u06FF\w+ +]+"|[0-9]+)( +)?(:.+\.)$/)
+		const match = line.match(RX_IF_STATEMENT)
 
 		if (match) {
 			const left = match[3]
@@ -87,7 +86,7 @@ export class IfStatementGenerator extends Generator {
  */
 export class ConsoleStatementGenerator extends Generator {
 	static generate(line) {
-		const match = line.match(/^(اطبع)( +)([\u0600-\u06FF\w+ +]+|"[\u0600-\u06FF\w+ +]+")( +)?\.$/)
+		const match = line.match(RX_CONSOLE_STATEMENT)
 
 		if (match) {
 			const param = match[3]
@@ -106,7 +105,7 @@ export class ConsoleStatementGenerator extends Generator {
  */
 export class RepeatStatementGenerator extends Generator {
 	static generate(line) {
-		const match = line.match(/^(كرر)( +)([0-9]+)( +)?(:.+\.)$/)
+		const match = line.match(RX_REPEAT_STATEMENT)
 
 		if (match) {
 			const count = Number(match[3])
@@ -128,7 +127,7 @@ export class RepeatStatementGenerator extends Generator {
  */
 export class FunctionDeclarationGenerator extends Generator {
 	static generate(line) {
-		const match = line.match(/^دالة +([\u0600-\u06FF]+) *?\( *?([\u0600-\u06FF]+) *?\) *?= *?(.+\.)$/)
+		const match = line.match(RX_FUNCTION_DECLARATION)
 
 		if (match) {
 			const name = match[1]
@@ -155,7 +154,7 @@ export class FunctionDeclarationGenerator extends Generator {
  */
 export class CallExpressionGenerator extends Generator {
 	static generate(line) {
-		const match = line.match(/^([\u0600-\u06FF]+) *?\( *?([\u0600-\u06FF]+|"[\u0600-\u06FF\w+ +]+"|[0-9]+) *?\)\.$/)
+		const match = line.match(RX_CALL_EXPRESSION)
 
 		console.log(line, match)
 		if (match) {
