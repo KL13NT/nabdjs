@@ -1,5 +1,7 @@
 import { formatValue, getVariable } from '../utils.js'
 import { EvaluationError, GenericError } from './Errors.js'
+import { VariableDeclaration } from './Declarations.js'
+/**@typedef { import ('./Declarations.js').FunctionDeclaration } FunctionDeclaration */
 
 /**
  * @class
@@ -21,6 +23,10 @@ export class ExpressionEvaluator {
 			return IfStatementEvaluator.eval(scope, expr)
 		else if (type === "RepeatStatement")
 			return RepeatStatementEvaluator.eval(scope, expr)
+		else if (type === "FunctionDeclaration")
+			return FunctionDeclarationEvaluator.eval(scope, expr)
+		else if (type === "CallExpression")
+			return CallExpressionEvaluator.eval(scope, expr)
 		else throw new GenericError(Nabd0001, expr)
 	}
 }
@@ -42,6 +48,8 @@ export class VariableDeclarationEvaluator {
 		if (type === "string" || type === "number") scope[name] = value
 		else if (type === "variable") {
 			if (!scope[value]) throw new EvaluationError(Nabd0002, expr)
+			// Functions are stored in global scope as objects while variables are primitives
+			if (typeof scope[value] == "object") throw new EvaluationError(Nabd0011, expr)
 
 			scope[name] = scope[value]
 		}
@@ -65,6 +73,7 @@ export class ConsoleStatementEvaluator {
 		if (type === "string" || type === "number") return value
 		else if (type === "variable") {
 			if (!scope[value]) throw new EvaluationError(Nabd0002, expr)
+			if (typeof scope[value] == "object") throw new EvaluationError(Nabd0010, expr)
 
 			return scope[value]
 		}
@@ -131,7 +140,6 @@ export class RepeatStatementEvaluator {
 		const { count, consequent } = expr
 
 		return this.repeat(scope, count, consequent)
-		ExpressionEvaluator.eval(scope, consequent)
 	}
 
 	/**
@@ -166,5 +174,61 @@ export class RepeatStatementEvaluator {
 		// passing right.type only since both are gonna be same type anyway
 		const result = this.compare({ rightValue, leftValue, type: right.type, operator })
 		return isNegated ? !result : result
+	}
+}
+
+/**
+ * @class
+ */
+export class FunctionDeclarationEvaluator {
+	/**
+	 * Evaluatues variable declarations
+	 * @param {object} globalScope scope, but global
+	 * @param {object} expr
+	 */
+	static eval(globalScope, expr) {
+		const { raw, declaration } = expr
+		const { name, param, body } = declaration
+		const extant = globalScope[name]
+
+		if (extant) {
+			if (typeof extant == "object") throw new EvaluationError(Nabd0012, expr)
+			else throw new EvaluationError(Nabd0013, expr)
+		}
+		else {
+			globalScope[name] = expr
+		}
+	}
+}
+
+/**
+ * @class
+ */
+export class CallExpressionEvaluator {
+	/**
+	 * Evaluatues variable declarations
+	 * @param {object} globalScope scope, but global
+	 * @param {object} expr
+	 */
+	static eval(globalScope, expr) {
+		const { name, param, raw } = expr
+
+		/** @type {FunctionDeclaration} */
+		const func = globalScope[name]
+		//FIXME: debug and fix
+		if (!func) throw new EvaluationError(Nabd0002, expr)
+		else {
+			if (typeof func !== "object") throw new EvaluationError(Nabd0014, expr)
+			else {
+				// Create local function scope and add param value to it, then pass that scope to the function body expr during execution.
+				const functionScope = {}
+				const paramObject = new VariableDeclaration(func.declaration.param, param.value, raw)
+
+				VariableDeclarationEvaluator.eval(functionScope, paramObject)
+				return ExpressionEvaluator.eval(functionScope, func.declaration.body)
+
+				// handling for function call
+			}
+		}
 	}
 }

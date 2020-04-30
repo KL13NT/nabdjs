@@ -131,3 +131,64 @@ export class ConsoleStatement extends Node {
 		return `أمر طباعة: ${ this.raw }`
 	}
 }
+
+/**
+ * @augments Node
+ */
+export class FunctionDeclaration extends Node {
+	/**
+	 * Creates VariableDeclaration SyntaxTree Node
+	 * @param {string} name
+	 * @param {string} param
+	 * @param {string} body
+	 * @param {string} raw
+	 */
+	constructor(name, param, body, raw) {
+		super("FunctionDeclaration")
+
+		this.declaration = {
+			name,
+			param,
+			body
+		}
+
+		this.raw = raw
+	}
+
+	/**
+	 * @override
+	 */
+	toString() {
+		return `تحديد دالة: ${ this.raw }`
+	}
+}
+
+/**
+ * @augments Node
+ */
+export class CallExpression extends Node {
+	/**
+	 * Creates CallExpression ST Node
+	 * @param {string} name
+	 * @param {string} param
+	 * @param {string} raw
+	 */
+	constructor(name, param, raw) {
+		super("CallExpression")
+
+		this.name = name
+		this.param = {
+			type: inferType(param),
+			value: formatValue(param)
+		}
+
+		this.raw = raw
+	}
+
+	/**
+	 * @override
+	 */
+	toString() {
+		return `تشغيل دالة: ${ this.raw }`
+	}
+}

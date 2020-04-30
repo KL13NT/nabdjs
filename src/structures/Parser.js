@@ -2,7 +2,9 @@ import {
 	VariableDeclarationGenerator,
 	IfStatementGenerator,
 	ConsoleStatementGenerator,
-	RepeatStatementGenerator
+	RepeatStatementGenerator,
+	FunctionDeclarationGenerator,
+	CallExpressionGenerator
 } from "./Generators.js"
 import { ParsingError } from "./Errors.js"
 
@@ -21,7 +23,9 @@ export class Parser {
 		else if (line.startsWith("حدد")) return VariableDeclarationGenerator.generate(line)
 		else if (line.startsWith("لو")) return IfStatementGenerator.generate(line)
 		else if (line.startsWith("كرر")) return RepeatStatementGenerator.generate(line)
-		else if (line.startsWith("اطبع")) return ConsoleStatementGenerator.generate(line)
+		else if (/^(اطبع)( +)([\u0600-\u06FF\w+ +]+|"[\u0600-\u06FF\w+ +]+")( +)?\.$/.test(line)) return ConsoleStatementGenerator.generate(line)
+		else if (line.startsWith("دالة")) return FunctionDeclarationGenerator.generate(line)
+		else if (/^([\u0600-\u06FF]+) *?\( *?([\u0600-\u06FF]+|"[\u0600-\u06FF\w+ +]+"|[0-9]+) *?\)\.$/.test(line)) return CallExpressionGenerator.generate(line)
 		else if (line.trim() === "") return ""
 		else throw new ParsingError(Nabd0006, line)
 	}

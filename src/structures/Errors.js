@@ -15,7 +15,7 @@ export class GenericError extends Error {
 	 * @virtual
 	 */
 	toString() {
-		if (typeof this.expr === "object") return `${ this.name } ${ this.expr.toString() }`
+		if (typeof this.expr === "object") return `${ this.name } ${ this.message } (${ this.expr.toString() })`
 		else return `خطأ: ${ this.message } (${ this.expr })`
 	}
 }

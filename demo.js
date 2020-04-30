@@ -31,6 +31,7 @@ window.addEventListener('load', () => {
 كرر 3: لو اسمي == "نبيل": لو اللغة == "نبض": اطبع "اهلاً وسهلاً".
 
 # الكود بيتم تشغيلة بشكل تلقائي لما تعدلوا عليه
+# الدوال ملهمش وصول للمتغيرات الخارجية الا عن طريق البراميتر
 `
 	area.addEventListener('keyup', e => {
 		evaluate(area.value, modifyContent)

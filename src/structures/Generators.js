@@ -2,7 +2,9 @@ import {
 	VariableDeclaration,
 	IfStatement,
 	ConsoleStatement,
-	RepeatStatement
+	RepeatStatement,
+	FunctionDeclaration,
+	CallExpression
 } from './Declarations.js'
 
 import {
@@ -116,5 +118,52 @@ export class RepeatStatementGenerator extends Generator {
 			return new RepeatStatement({ count, consequent, raw: line })
 		}
 		else throw new ParsingError(`في حاجة غلط وانت بتعمل الشرط`, line)
+	}
+}
+
+/**
+ * @class
+ * @abstract
+ * @extends Generator
+ */
+export class FunctionDeclarationGenerator extends Generator {
+	static generate(line) {
+		const match = line.match(/^دالة +([\u0600-\u06FF]+) *?\( *?([\u0600-\u06FF]+) *?\) *?= *?(.+\.)$/)
+
+		if (match) {
+			const name = match[1]
+			const param = match[2]
+			const expr = match[3]
+			const body = Parser.parseLine(expr.trim())
+
+			console.log(expr, body)
+
+			return new FunctionDeclaration(
+				name,
+				param,
+				body,
+				line
+			)
+		}
+		else throw new ParsingError(`في حاجة غلط وانت بتعمل الدالة`, line)
+	}
+}
+/**
+ * @class
+ * @abstract
+ * @extends Generator
+ */
+export class CallExpressionGenerator extends Generator {
+	static generate(line) {
+		const match = line.match(/^([\u0600-\u06FF]+) *?\( *?([\u0600-\u06FF]+|"[\u0600-\u06FF\w+ +]+"|[0-9]+) *?\)\.$/)
+
+		console.log(line, match)
+		if (match) {
+
+			const name = match[1]
+			const param = match[2]
+			return new CallExpression(name, param, line)
+		}
+		else throw new ParsingError(`في حاجة غلط وانت بتعمل الدالة`, line)
 	}
 }
