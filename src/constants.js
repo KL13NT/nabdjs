@@ -15,7 +15,6 @@ const ERROR_FUNC_ALREADY_DECLARED = "الدالة دي موجودة مسبقاً
 const ERROR_ASSIGN_FUNC_TO_VARIABLE = "مينفعش اخزن دالة في متغير"
 const ERROR_CALL_TO_NONFUNC = "مينفعش تشغل حاجة بالشكل ده الا الدوال"
 
-//REFACTORME: move all RX here
 const RX_CONSOLE_STATEMENT = /^(اطبع)( +)([\u0600-\u06FF\w+ +]+|"[\u0600-\u06FF\w+ +]+")( +)?\.$/
 const RX_REPEAT_STATEMENT = /^(كرر)( +)([0-9]+)( +)?(:.+\.)$/
 const RX_FUNCTION_DECLARATION = /^دالة +([\u0600-\u06FF]+) *?\( *?([\u0600-\u06FF]+) *?\) *?= *?(.+\.)$/

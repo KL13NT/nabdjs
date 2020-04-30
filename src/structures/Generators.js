@@ -64,7 +64,6 @@ export class IfStatementGenerator extends Generator {
 			const operator = match[6]
 			const expr = match[10]
 			const consequent = Parser.parseLine(expr.replace(":", '').trim())
-			console.log(expr)
 
 			return new IfStatement({
 				right,
@@ -135,8 +134,6 @@ export class FunctionDeclarationGenerator extends Generator {
 			const expr = match[3]
 			const body = Parser.parseLine(expr.trim())
 
-			console.log(expr, body)
-
 			return new FunctionDeclaration(
 				name,
 				param,
@@ -156,7 +153,6 @@ export class CallExpressionGenerator extends Generator {
 	static generate(line) {
 		const match = line.match(RX_CALL_EXPRESSION)
 
-		console.log(line, match)
 		if (match) {
 
 			const name = match[1]

@@ -26,7 +26,6 @@ export function evaluate(program, hook) {
 		console.log(err)
 	}
 
-	console.log(result)
 	hook(result)
 	return result
 }
