@@ -15,18 +15,18 @@ export class ExpressionEvaluator {
 	static eval(scope, expr) {
 		const { type } = expr
 
-		if (type === "VariableDeclaration")
-			return VariableDeclarationEvaluator.eval(scope, expr)
-		else if (type === "ConsoleStatement")
-			return ConsoleStatementEvaluator.eval(scope, expr)
-		else if (type === "IfStatement")
-			return IfStatementEvaluator.eval(scope, expr)
-		else if (type === "RepeatStatement")
-			return RepeatStatementEvaluator.eval(scope, expr)
-		else if (type === "FunctionDeclaration")
-			return FunctionDeclarationEvaluator.eval(scope, expr)
-		else if (type === "CallExpression")
-			return CallExpressionEvaluator.eval(scope, expr)
+		const evaluators = {
+			VariableDeclarationEvaluator,
+			ConsoleStatementEvaluator,
+			IfStatementEvaluator,
+			RepeatStatementEvaluator,
+			FunctionDeclarationEvaluator,
+			CallExpressionEvaluator
+		}
+
+		const evaluator = evaluators[`${ type }Evaluator`]
+
+		if (evaluator) return evaluator.eval(scope, expr)
 		else throw new GenericError(Nabd0001, expr)
 	}
 }
@@ -35,7 +35,7 @@ export class ExpressionEvaluator {
 /**
  * @class
  */
-export class VariableDeclarationEvaluator {
+class VariableDeclarationEvaluator {
 	/**
 	 * Evaluatues variable declarations
 	 * @param {object} scope
@@ -62,7 +62,7 @@ export class VariableDeclarationEvaluator {
 /**
  * @class
  */
-export class ConsoleStatementEvaluator {
+class ConsoleStatementEvaluator {
 	/**
 	 * Evaluatues console statements
 	 * @param {object} scope
@@ -86,7 +86,7 @@ export class ConsoleStatementEvaluator {
 /**
  * @class
  */
-export class IfStatementEvaluator {
+class IfStatementEvaluator {
 	/**
 	 * Evaluatues if statements
 	 * @param {object} scope
@@ -148,7 +148,7 @@ export class IfStatementEvaluator {
 /**
  * @class
  */
-export class RepeatStatementEvaluator {
+class RepeatStatementEvaluator {
 	/**
 	 * Evaluatues if statements
 	 * @param {object} scope
@@ -180,7 +180,7 @@ export class RepeatStatementEvaluator {
 /**
  * @class
  */
-export class FunctionDeclarationEvaluator {
+class FunctionDeclarationEvaluator {
 	/**
 	 * Evaluatues variable declarations
 	 * @param {object} globalScope scope, but global
@@ -204,7 +204,7 @@ export class FunctionDeclarationEvaluator {
 /**
  * @class
  */
-export class CallExpressionEvaluator {
+class CallExpressionEvaluator {
 	/**
 	 * Evaluatues variable declarations
 	 * @param {object} globalScope scope, but global

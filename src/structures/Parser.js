@@ -1,3 +1,4 @@
+import { ParsingError } from "./Errors.js"
 import {
 	VariableDeclarationGenerator,
 	IfStatementGenerator,
@@ -6,7 +7,6 @@ import {
 	FunctionDeclarationGenerator,
 	CallExpressionGenerator
 } from "./Generators.js"
-import { ParsingError } from "./Errors.js"
 
 /**
  * @class

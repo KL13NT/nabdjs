@@ -137,13 +137,13 @@ export class ConsoleStatement extends Node {
  */
 export class FunctionDeclaration extends Node {
 	/**
-	 * Creates VariableDeclaration SyntaxTree Node
+	 * Creates Function Declaration SyntaxTree Node
 	 * @param {string} name
 	 * @param {string} param
 	 * @param {string} body
 	 * @param {string} raw
 	 */
-	constructor(name, param, body, raw) {
+	constructor({ name, param, body, raw }) {
 		super("FunctionDeclaration")
 
 		this.declaration = {
@@ -177,6 +177,7 @@ export class CallExpression extends Node {
 		super("CallExpression")
 
 		this.name = name
+
 		if (param) this.param = {
 			type: inferType(param),
 			value: formatValue(param)
