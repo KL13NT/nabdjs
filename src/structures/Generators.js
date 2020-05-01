@@ -39,8 +39,8 @@ export class VariableDeclarationGenerator extends Generator {
 		const match = raw.match(RX_VARIABLE_DECLARATION)
 
 		if (match) {
-			const name = match[3]
-			const value = match[6].replace('.', '')
+			const name = match[1]
+			const value = match[2]
 
 			return new VariableDeclaration(name, value, raw)
 		}
@@ -58,12 +58,12 @@ export class IfStatementGenerator extends Generator {
 		const match = raw.match(RX_IF_STATEMENT)
 
 		if (match) {
-			const left = match[3]
-			const right = match[8]
-			const isNegated = match[5]
-			const operator = match[6]
-			const expr = match[10]
-			const consequent = Parser.parseLine(expr.replace(":", '').trim())
+			const left = match[1]
+			const right = match[4]
+			const isNegated = match[2]
+			const operator = match[3]
+			const expr = match[5]
+			const consequent = Parser.parseLine(expr.trim())
 
 			return new IfStatement({
 				right,
@@ -88,7 +88,7 @@ export class ConsoleStatementGenerator extends Generator {
 		const match = raw.match(RX_CONSOLE_STATEMENT)
 
 		if (match) {
-			const param = match[3]
+			const param = match[1]
 
 			return new ConsoleStatement(param, raw)
 		}
@@ -107,12 +107,11 @@ export class RepeatStatementGenerator extends Generator {
 		const match = raw.match(RX_REPEAT_STATEMENT)
 
 		if (match) {
-			const count = Number(match[3])
-			const expr = match[5]
+			const count = Number(match[1])
+			const expr = match[2]
 			const consequent = Parser.parseLine(
 				unescape(
 					expr
-						.replace(":", '')
 						.trim()
 				)
 			)

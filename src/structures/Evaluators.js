@@ -210,10 +210,11 @@ class CallExpressionEvaluator {
 	 * @param {object} expr
 	 */
 
-	static prepareParams({ globalScope, func, param, raw }) {
+	static prepareParams({ globalScope, functionScope, func, param, raw }) {
 		const paramObject = globalScope[param.value] || new VariableDeclaration(func.declaration.param, param.value, raw)
 
 		if (!globalScope[param.value]) VariableDeclarationEvaluator.eval(functionScope, paramObject)
+		else functionScope[func.declaration.param] = paramObject
 	}
 
 	static eval(globalScope, expr) {
@@ -227,7 +228,13 @@ class CallExpressionEvaluator {
 				// Create local function scope and add param value to it, then pass that scope to the function body expr.
 				const functionScope = {}
 
-				if (param) this.prepareParams({ globalScope, func, param, raw })
+				if (param) this.prepareParams({
+					globalScope,
+					functionScope,
+					func,
+					param,
+					raw
+				})
 
 				return ExpressionEvaluator.eval(functionScope, func.declaration.body)
 			}

@@ -17,12 +17,18 @@ const ERROR_CALL_TO_NONFUNC = "مينفعش تشغل حاجة بالشكل ده 
 
 
 
-const RX_CONSOLE_STATEMENT = /^(اطبع)( +)([\u0600-\u06FF\w+ +]+|"[\u0600-\u06FF\w+ +]+")( +)?\.$/
-const RX_REPEAT_STATEMENT = /^(كرر)( +)([0-9]+)( +)?(:.+\.)$/
-const RX_FUNCTION_DECLARATION = /^دالة +([\u0600-\u06FF]+) *?\( *?([\u0600-\u06FF]+)? *?\) *?= *?(.+\.)$/
-const RX_CALL_EXPRESSION = /^([\u0600-\u06FF]+) *?\( *?([\u0600-\u06FF]+|"[\u0600-\u06FF\w+ +]+"|[0-9]+)? *?\)\.$/
-const RX_IF_STATEMENT = /^(لو)( +)([\u0600-\u06FF]+|"[\u0600-\u06FF\w+ +]+"|[0-9]+)( +)?(!)?(>|<|==)( +)?([\u0600-\u06FF]+|"[\u0600-\u06FF\w+ +]+"|[0-9]+)( +)?(:.+\.)$/
-const RX_VARIABLE_DECLARATION = /^(حدد)( +)([\u0600-\u06FF]+)( +)?=( +)?(.+\.)$/
+const RX_VALUE = `[\\u0600-\\u06FF]+|"[\\u0600-\\u06FF\\w ]+"|[0-9]+`
+const RX_NUMBER = `[0-9]+`
+const RX_VARIABLE = `[\\u0600-\\u06FF]+`
+const RX_OPERATORS = `(!)?(>|<|==)`
+
+
+const RX_CONSOLE_STATEMENT = new RegExp(`^اطبع +(${ RX_VALUE }) *\\.$`)
+const RX_REPEAT_STATEMENT = new RegExp(`^كرر +(${ RX_NUMBER }) *:(.+\\.)$`)
+const RX_FUNCTION_DECLARATION = new RegExp(`^دالة +(${ RX_VARIABLE }) *\\( *(${ RX_VARIABLE })? *\\) *= *(.+\\.)$`)
+const RX_CALL_EXPRESSION = new RegExp(`^(${ RX_VARIABLE }) *\\( *(${ RX_VALUE }) *\\) *\\.$`)
+const RX_IF_STATEMENT = new RegExp(`^لو *(${ RX_VALUE }) *${ RX_OPERATORS } *(${ RX_VALUE }) *:(.+\\.)$`)
+const RX_VARIABLE_DECLARATION = new RegExp(`^حدد +(${ RX_VARIABLE }) *= *(${ RX_VALUE }) *\\.$`)
 const RX_COMMENT = /^#/
 
 
