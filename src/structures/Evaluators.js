@@ -211,10 +211,13 @@ class CallExpressionEvaluator {
 	 */
 
 	static prepareParams({ globalScope, functionScope, func, param, raw }) {
-		const paramObject = globalScope[param.value] || new VariableDeclaration(func.declaration.param, param.value, raw)
+		const localVariableName = func.declaration.param
+		const paramObject = globalScope[param.value] ||
+			new VariableDeclaration(localVariableName, param.value, raw)
 
-		if (!globalScope[param.value]) VariableDeclarationEvaluator.eval(functionScope, paramObject)
-		else functionScope[func.declaration.param] = paramObject
+		if (!globalScope[param.value])
+			VariableDeclarationEvaluator.eval(functionScope, paramObject)
+		else functionScope[localVariableName] = paramObject
 	}
 
 	static eval(globalScope, expr) {
@@ -225,7 +228,8 @@ class CallExpressionEvaluator {
 		else {
 			if (typeof func !== "object") throw new EvaluationError(Nabd0014, expr)
 			else {
-				// Create local function scope and add param value to it, then pass that scope to the function body expr.
+				// Create local function scope and add param value to it,
+				// then pass that scope to the function body expr.
 				const functionScope = {}
 
 				if (param) this.prepareParams({
